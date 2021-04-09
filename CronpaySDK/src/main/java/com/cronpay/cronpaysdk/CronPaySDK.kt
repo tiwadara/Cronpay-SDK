@@ -29,8 +29,11 @@ object CronPaySDK {
      *
      * @param context - Application Context
      */
-    @Synchronized
     fun initialize(context: Context) {
         initialize(context)
+    }
+
+    fun startMandate() : String {
+        return  "Mandate will be returned"
     }
 }
