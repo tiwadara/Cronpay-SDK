@@ -3,8 +3,8 @@
 3<manifest xmlns:android="http://schemas.android.com/apk/res/android"
 4    xmlns:tools="http://schemas.android.com/tools"
 5    package="com.cronpay.cronpay_module"
-6    android:versionCode="1"
-7    android:versionName="1.0" >
+6    android:versionCode="29"
+7    android:versionName="1.1.9" >
 8
 9    <uses-sdk
 10        android:minSdkVersion="16"

@@ -10,7 +10,12 @@ import io.flutter.embedding.engine.FlutterEngineCache
 import io.flutter.embedding.engine.dart.DartExecutor
 import io.flutter.plugin.common.MethodChannel
 
-class CronPayFlutterEngine {
+object CronPayFlutterEngine {
+
+    /**
+     * Application COntext
+     */
+    var applicationContext: Context? = null
 
     private lateinit var flutterEngine: FlutterEngine
     private  val FLUTTER_ENGINE_ID = "my_engine_id"
@@ -18,24 +23,20 @@ class CronPayFlutterEngine {
     private val METHOD_DIRECT_DEPOSIT = "dp"
     private val METHOD_CARD = "card"
     private val METHOD_INITIALIZE = "initialize"
-    private var context: Context? = null
 
-    fun launchEngine(context: Context) {
-        this.context = context
-        launchFlutterModule()
-    }
 
-    fun setupFlutterEngine(context: Context) {
-        this.context = context
-        createAndConfigureFlutterEngine()
+    fun launchEngine(){
+        initFlutterEngine(applicationContext!!)
         FlutterEngineCache.getInstance().put(FLUTTER_ENGINE_ID, flutterEngine)
+        launchFlutterModule()
         setupMethodChannel()
     }
 
-    private fun createAndConfigureFlutterEngine() {
-        flutterEngine = FlutterEngine(context!!)
-        flutterEngine.dartExecutor.executeDartEntrypoint(DartExecutor.DartEntrypoint.createDefault())
-        flutterEngine.navigationChannel.setInitialRoute("/createMandate'")
+    fun initFlutterEngine(context: Context) {
+        this.applicationContext = context
+        flutterEngine = FlutterEngine(context)
+        flutterEngine.dartExecutor.executeDartEntrypoint(
+            DartExecutor.DartEntrypoint.createDefault())
     }
 
     private fun setupMethodChannel() {
@@ -56,12 +57,12 @@ class CronPayFlutterEngine {
     }
 
     private fun launchFlutterModule() {
-        context?.startActivity(getFlutterIntent())
+        applicationContext?.startActivity(getFlutterIntent())
     }
 
     private fun getFlutterIntent(): Intent {
         return withCachedEngine(FLUTTER_ENGINE_ID)
                 .backgroundMode(FlutterActivityLaunchConfigs.BackgroundMode.transparent)
-                .build(context!!)
+                .build(applicationContext!!)
     }
 }
