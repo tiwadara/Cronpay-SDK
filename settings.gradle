@@ -1,8 +1,8 @@
 include ':CronpaySDK'
-setBinding(new Binding([gradle: this]))
-evaluate(new File(
-  settingsDir,
-  'cron_pay_flutter_sdk/.android/include_flutter.groovy'
-))
+//setBinding(new Binding([gradle: this]))
+//evaluate(new File(
+//  settingsDir,
+//  'cron_pay_flutter_sdk/.android/include_flutter.groovy'
+//))
 include ':app'
 rootProject.name = "CronPaySDK Example"
