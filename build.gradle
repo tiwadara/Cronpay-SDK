@@ -23,6 +23,9 @@ allprojects {
             url '../cron_pay_flutter_sdk/build/host/outputs/repo'
         }
         maven {
+            url '../.m2/repository'
+        }
+        maven {
             url "$storageUrl/download.flutter.io"
         }
     }
