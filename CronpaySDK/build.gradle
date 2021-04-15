@@ -1,7 +1,7 @@
 plugins {
     id 'com.android.library'
     id 'kotlin-android'
-    id 'maven-publish'
+    id "com.google.cloud.artifactregistry.gradle-plugin" version "2.0.1"
 }
 
 android {
@@ -28,48 +28,6 @@ android {
         }
     }
 
-    String home = System.env.HOME ?: "$HOME" ?: ".."
-    task copyFlutterArtifacts(type: Copy) {
-        from('../cron_pay_flutter_sdk/build/host/outputs/repo')
-        into("$home/.m2/repository")
-    }
-
-    project.afterEvaluate {
-        assembleRelease.doLast {
-            tasks.copyFlutterArtifacts.execute()
-        }
-        assembleDebug.doLast {
-            tasks.copyFlutterArtifacts.execute()
-        }
-    }
-
-    configurations.maybeCreate("default")
-    def publishArtifact = artifacts.add("default", file('../cron_pay_flutter_sdk/build/host/outputs/repo'))
-
-    publishing {
-        publications {
-            aar(MavenPublication) {
-                groupId = 'com.cronpay.cron_pay'
-                artifactId = 'flutter_release'
-                version = '1.0.0'
-                artifact publishArtifact
-            }
-        }
-    }
-
-    publishToMavenLocal {
-        publishing {
-            publications {
-            }
-        }
-    }
-
-    uploadArchives {
-        repositories {
-            mavenLocal()
-        }
-    }
-
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
@@ -89,8 +47,8 @@ dependencies {
     debugImplementation 'com.cronpay.cronpay_module:flutter_debug:1.0'
     profileImplementation 'com.cronpay.cronpay_module:flutter_profile:1.0'
     releaseImplementation 'com.cronpay.cronpay_module:flutter_release:1.0'
-//    implementation project(path: ':flutter')
     testImplementation 'junit:junit:4.+'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
 }
+
