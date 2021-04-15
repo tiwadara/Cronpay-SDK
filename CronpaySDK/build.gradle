@@ -1,7 +1,7 @@
 plugins {
     id 'com.android.library'
     id 'kotlin-android'
-    id "com.google.cloud.artifactregistry.gradle-plugin" version "2.0.1"
+//    id "com.google.cloud.artifactregistry.gradle-plugin" version "2.0.1"
 }
 
 android {
