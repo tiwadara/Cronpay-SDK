@@ -19,9 +19,16 @@ allprojects {
     repositories {
         google()
         jcenter()
-        mavenLocal()
+//        mavenLocal()
         maven {
-            url "$storageUrl/download.flutter.io"
+            url "https://storage.googleapis.com/download.flutter.io"
+        }
+        maven {
+            url "https://us-central1-maven.pkg.dev/cron-pay-sdk/cronpay-maven-repo"
+            credentials {
+                username = "_json_key_base64"
+                password = "$artifactRegistryMavenSecret"
+            }
         }
     }
 }
