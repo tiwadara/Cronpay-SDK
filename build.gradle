@@ -19,9 +19,11 @@ allprojects {
     repositories {
         google()
         jcenter()
-        mavenLocal()
         maven {
             url '../../cron_pay_flutter_sdk/build/host/outputs/repo'
+        }
+        maven {
+            url "https://us-central1-maven.pkg.dev/cron-pay-sdk/cronpay-maven-repo"
         }
         maven {
             url "https://storage.googleapis.com/download.flutter.io"
