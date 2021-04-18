@@ -1,6 +1,7 @@
 package com.cronpay.cronpaysdk
 
 import android.content.Context
+import org.json.JSONObject
 
 
 /**
@@ -33,11 +34,11 @@ object CronPaySDK {
      *
      * @param context - Application Context
      */
-    fun initialize(context: Context?) {
+    fun initialize(context: Context?, accessToken: String?) {
         if (context != null) {
             applicationContext = context
             isSdkInitialized = true
-            CronPayFlutterEngine.initFlutterEngine(applicationContext!!)
+            CronPayFlutterEngine.initFlutterEngine(applicationContext!!, accessToken)
         }
     }
 

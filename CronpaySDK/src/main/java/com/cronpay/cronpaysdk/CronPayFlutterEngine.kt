@@ -18,40 +18,51 @@ object CronPayFlutterEngine {
     var applicationContext: Context? = null
 
     private lateinit var flutterEngine: FlutterEngine
-    private  val FLUTTER_ENGINE_ID = "my_engine_id"
+    private  val FLUTTER_ENGINE_ID = "cronpay_flutter_engine_id"
     private val CHANNEL = "com.tiwa.cronpayanndroidhost/test"
     private val METHOD_DIRECT_DEPOSIT = "dp"
     private val METHOD_CARD = "card"
     private val METHOD_INITIALIZE = "initialize"
+    private val  METHOD_SEND_SUCCESS_CALLBACK= "send_success_call_back"
+    private val  METHOD_SEND_CLOSE_CALLBACK= "send_close_call_back"
+    private var accessKey ="sdsd"
 
 
     fun launchEngine(){
-        initFlutterEngine(applicationContext!!)
+        initFlutterEngine(applicationContext!!, accessKey)
         FlutterEngineCache.getInstance().put(FLUTTER_ENGINE_ID, flutterEngine)
         launchFlutterModule()
-        setupMethodChannel()
     }
 
-    fun initFlutterEngine(context: Context) {
+    fun initFlutterEngine(context: Context, accessToken: String?) {
+        this.accessKey = accessToken!!
         this.applicationContext = context
         flutterEngine = FlutterEngine(context)
         flutterEngine.dartExecutor.executeDartEntrypoint(
             DartExecutor.DartEntrypoint.createDefault())
+        setupMethodChannel()
     }
 
     private fun setupMethodChannel() {
-        MethodChannel(
-                flutterEngine.dartExecutor.binaryMessenger,
-                CHANNEL
-        ).setMethodCallHandler { call, result ->
-            if(call.method.equals (METHOD_CARD))
-            {
-                result.success("Hai from android and this is the data yopu sent me "+ call.argument("data"));
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, CHANNEL).setMethodCallHandler { call, result ->
+            when {
+                call.method.equals(METHOD_INITIALIZE) -> {
+                    Log.e("initialize request",call.method + call.arguments.toString() + accessKey);
+                    result.success(accessKey)
 
-            }
-            else
-            {
-                Log.e("new method came",call.method);
+                }
+                call.method.equals(METHOD_SEND_CLOSE_CALLBACK) -> {
+                    Log.e("callback",call.method);
+
+                }
+                call.method.equals(METHOD_SEND_SUCCESS_CALLBACK) -> {
+                    Log.e("callback",call.method);
+
+                }
+                else -> {
+                    result.notImplemented()
+                    Log.e("new method came",call.method);
+                }
             }
         }
     }
@@ -62,7 +73,7 @@ object CronPayFlutterEngine {
 
     private fun getFlutterIntent(): Intent {
         return withCachedEngine(FLUTTER_ENGINE_ID)
-                .backgroundMode(FlutterActivityLaunchConfigs.BackgroundMode.transparent)
-                .build(applicationContext!!)
+            .backgroundMode(FlutterActivityLaunchConfigs.BackgroundMode.transparent)
+            .build(applicationContext!!)
     }
 }

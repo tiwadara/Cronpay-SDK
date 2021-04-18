@@ -1,6 +1,8 @@
 plugins {
     id 'com.android.library'
     id 'kotlin-android'
+    id 'maven-publish'
+    id 'maven'
 }
 
 android {
@@ -40,6 +42,29 @@ android {
     defaultConfig {
         ndk {
             abiFilters 'x86', 'x86_64', 'armeabi', 'armeabi-v7a', 'mips', 'mips64', 'arm64-v8a'
+        }
+    }
+    afterEvaluate {
+        publishing {
+            publications {
+                release(MavenPublication) {
+                    from components.release
+                    groupId = 'com.cronpay'
+                    artifactId = 'final'
+                    version = '1.0'
+                }
+                debug(MavenPublication) {
+                    from components.debug
+                    groupId = 'com.cronpay'
+                    artifactId = 'final-debug'
+                    version = '1.0'
+                }
+            }
+            repositories {
+                maven {
+                    url "https://us-central1-maven.pkg.dev/cron-pay-sdk/cronpay-maven-repo"
+                }
+            }
         }
     }
 }
