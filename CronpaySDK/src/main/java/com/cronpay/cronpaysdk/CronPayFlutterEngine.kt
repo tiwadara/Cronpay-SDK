@@ -10,7 +10,7 @@ import io.flutter.embedding.engine.FlutterEngineCache
 import io.flutter.embedding.engine.dart.DartExecutor
 import io.flutter.plugin.common.MethodChannel
 
-object CronPayFlutterEngine {
+internal object CronPayFlutterEngine {
 
     /**
      * Application COntext
@@ -18,28 +18,29 @@ object CronPayFlutterEngine {
     var applicationContext: Context? = null
 
     private lateinit var flutterEngine: FlutterEngine
-    private  val FLUTTER_ENGINE_ID = "cronpay_flutter_engine_id"
-    private val CHANNEL = "com.tiwa.cronpayanndroidhost/test"
+    private val FLUTTER_ENGINE_ID = "cronpay_flutter_engine_id"
+    private val CHANNEL = "com.cronpay.cronpaysdk/mainChannel"
     private val METHOD_DIRECT_DEPOSIT = "dp"
     private val METHOD_CARD = "card"
     private val METHOD_INITIALIZE = "initialize"
-    private val  METHOD_SEND_SUCCESS_CALLBACK= "send_success_call_back"
-    private val  METHOD_SEND_CLOSE_CALLBACK= "send_close_call_back"
-    private var accessKey ="sdsd"
+    private val METHOD_MANDATE_CREATED_CALLBACK= "mandate_created_call_back"
+    private val METHOD_SEND_CLOSE_CALLBACK = "send_close_call_back"
+    private val METHOD_ERROR_CALLBACK = "error_call_back"
+    private var accessKey = ""
 
 
-    fun launchEngine(){
-        initFlutterEngine(applicationContext!!, accessKey)
+    fun launchEngine(accessToken: String?, context: Context?) {
+        this.accessKey = accessToken!!
+        this.applicationContext = context
+        initFlutterEngine(this.applicationContext!!)
         FlutterEngineCache.getInstance().put(FLUTTER_ENGINE_ID, flutterEngine)
         launchFlutterModule()
     }
 
-    fun initFlutterEngine(context: Context, accessToken: String?) {
-        this.accessKey = accessToken!!
-        this.applicationContext = context
+    fun initFlutterEngine(context: Context) {
         flutterEngine = FlutterEngine(context)
         flutterEngine.dartExecutor.executeDartEntrypoint(
-            DartExecutor.DartEntrypoint.createDefault())
+                DartExecutor.DartEntrypoint.createDefault())
         setupMethodChannel()
     }
 
@@ -47,21 +48,24 @@ object CronPayFlutterEngine {
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, CHANNEL).setMethodCallHandler { call, result ->
             when {
                 call.method.equals(METHOD_INITIALIZE) -> {
-                    Log.e("initialize request",call.method + call.arguments.toString() + accessKey);
                     result.success(accessKey)
 
                 }
                 call.method.equals(METHOD_SEND_CLOSE_CALLBACK) -> {
-                    Log.e("callback",call.method);
+                    CronPaySDK.onClose()
 
                 }
-                call.method.equals(METHOD_SEND_SUCCESS_CALLBACK) -> {
-                    Log.e("callback",call.method);
+                call.method.equals(METHOD_MANDATE_CREATED_CALLBACK) -> {
+                    CronPaySDK.onSuccess(call.arguments.toString())
+
+                }
+                call.method.equals(METHOD_ERROR_CALLBACK) -> {
+                    CronPaySDK.onError(call.arguments.toString())
 
                 }
                 else -> {
                     result.notImplemented()
-                    Log.e("new method came",call.method);
+                    Log.e("new method came", call.method);
                 }
             }
         }
@@ -73,7 +77,7 @@ object CronPayFlutterEngine {
 
     private fun getFlutterIntent(): Intent {
         return withCachedEngine(FLUTTER_ENGINE_ID)
-            .backgroundMode(FlutterActivityLaunchConfigs.BackgroundMode.transparent)
-            .build(applicationContext!!)
+                .backgroundMode(FlutterActivityLaunchConfigs.BackgroundMode.transparent)
+                .build(applicationContext!!)
     }
 }

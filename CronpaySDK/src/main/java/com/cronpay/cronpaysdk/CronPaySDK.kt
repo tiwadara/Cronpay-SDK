@@ -1,53 +1,75 @@
 package com.cronpay.cronpaysdk
 
 import android.content.Context
-import org.json.JSONObject
 
 
 /**
- * This is the  croppay sdk manager class.
+ * This is the  croppay sdk class.
  * Must be used to initialize the Sdk.
  *
- * @author {Tiwadara} on 0/0/1990.
+ * @author {TiwaDara} on 0/0/1990.
  */
 object CronPaySDK {
 
     /**
-     * Application COntext
+     * Application Context
      */
     private var applicationContext: Context? = null
+    private var accessToken: String? = null
+    private  var listener: CronPayListener? = null
+    private  var isSdkInitialized = false
+
 
     /**
-     * Flag to know if sdk has been initialized
-     */
-    var isSdkInitialized = false
-        private set
-
-    /**
-     * Reference to the public key
-     */
-    @Volatile
-    private var publicKey: String? = null
-
-    /**
-     * Initialize an sdk
+     * Initialize the sdk
      *
      * @param context - Application Context
+     * @param token - Access Token
      */
-    fun initialize(context: Context?, accessToken: String?) {
+    fun initialize(context: Context?, token: String?) {
         if (context != null) {
             applicationContext = context
             isSdkInitialized = true
-            CronPayFlutterEngine.initFlutterEngine(applicationContext!!, accessToken)
+            accessToken = token
+            CronPayFlutterEngine.initFlutterEngine(applicationContext!!)
         }
     }
 
+    /**
+     * Start mandate creation
+     *
+     * @param listener - CronPay Listener
+     * @throws NullPointerException
+     */
+
     @Throws(java.lang.NullPointerException::class)
-    fun startMandate() {
+    fun startMandate(listener: CronPayListener) {
+        this.listener = listener
         if (isSdkInitialized){
-            CronPayFlutterEngine.launchEngine()
+            CronPayFlutterEngine.launchEngine(accessToken, applicationContext)
         } else {
             throw NullPointerException()
         }
     }
+
+    internal fun onError(error: String){
+       listener?.onError(error)
+    }
+
+    internal fun onSuccess(message: String){
+        listener?.onSuccess(message)
+    }
+
+    internal fun onClose() {
+        listener?.onClose()
+    }
+
+    interface  CronPayListener {
+        fun onError(error: String)
+        fun onSuccess(message: String)
+        fun onClose()
+    }
 }
+
+
+
