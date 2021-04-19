@@ -35,13 +35,8 @@ class MainActivity : AppCompatActivity() {
               override fun onError(error: String) {
                   Log.e("*#*#*#*#* Errror", "onCreate: $error", )
               }
-
               override fun onSuccess(message: String) {
                   Log.e("*#*#*#*#* success", "onCreate: $message", )
-              }
-
-              override fun onClose() {
-
               }
 
           })

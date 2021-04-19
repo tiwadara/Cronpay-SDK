@@ -16,8 +16,8 @@ object CronPaySDK {
      */
     private var applicationContext: Context? = null
     private var accessToken: String? = null
-    private  var listener: CronPayListener? = null
-    private  var isSdkInitialized = false
+    private var listener: CronPayListener? = null
+    private var isSdkInitialized = false
 
 
     /**
@@ -27,7 +27,7 @@ object CronPaySDK {
      * @param token - Access Token
      */
     fun initialize(context: Context?, token: String?) {
-        if (context != null) {
+        if (context != null && token != null) {
             applicationContext = context
             isSdkInitialized = true
             accessToken = token
@@ -42,21 +42,20 @@ object CronPaySDK {
      * @throws NullPointerException
      */
 
-    @Throws(java.lang.NullPointerException::class)
-    fun startMandate(listener: CronPayListener) {
+    fun startMandate(listener: CronPayListener ) {
         this.listener = listener
-        if (isSdkInitialized){
+        if (isSdkInitialized) {
             CronPayFlutterEngine.launchEngine(accessToken, applicationContext)
         } else {
-            throw NullPointerException()
+            this.listener?.onError("SDK not Initialized")
         }
     }
 
-    internal fun onError(error: String){
-       listener?.onError(error)
+    internal fun onError(error: String) {
+        listener?.onError(error)
     }
 
-    internal fun onSuccess(message: String){
+    internal fun onSuccess(message: String) {
         listener?.onSuccess(message)
     }
 
@@ -65,11 +64,9 @@ object CronPaySDK {
     }
 
     interface  CronPayListener {
-        fun onError(error: String)
-        fun onSuccess(message: String)
-        fun onClose()
+        fun onError(error: String) {}
+        fun onSuccess(message: String){}
+        fun onClose() {}
     }
+
 }
-
-
-
